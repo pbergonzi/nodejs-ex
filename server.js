@@ -188,6 +188,19 @@ const ipnHandler = (req, res) => {
 
 app.post('/ipn', ipnHandler);
 
+const forceSSL = function() {
+  return function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(
+       ['https://', req.get('Host'), req.url].join('')
+      );
+    }
+    next();
+  }
+}
+
+app.use(forceSSL);
+
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
